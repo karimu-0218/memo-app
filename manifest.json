@@ -2,7 +2,7 @@
   "name": "メモ",
   "short_name": "メモ",
   "description": "スワイプで仕分けるメモアプリ",
-  "start_url": "/",
+  "start_url": "/memo-app/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
