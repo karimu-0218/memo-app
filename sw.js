@@ -1,5 +1,9 @@
 const CACHE = 'memo-app-v1';
-const ASSETS = ['/', '/index.html', '/manifest.json'];
+const ASSETS = [
+  '/memo-app/',
+  '/memo-app/index.html',
+  '/memo-app/manifest.json'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
@@ -15,6 +19,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('/memo-app/index.html')))
   );
 });
