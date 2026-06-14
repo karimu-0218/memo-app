@@ -36,38 +36,28 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-se
 .action-btn { width: 56px; height: 56px; border-radius: 50%; border: 1px solid #e0e0e0; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 22px; color: #555; transition: background 0.1s; }
 .action-btn:active { background: #f0f0f0; }
 .action-btn.danger { color: #c0392b; }
-
-/* Bottom tabs */
 .bottom-tabs { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 0.5px solid #e0e0e0; display: flex; padding-bottom: env(safe-area-inset-bottom, 0); z-index: 100; }
 .btab { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 8px; cursor: pointer; gap: 3px; }
 .btab-icon { font-size: 22px; color: #aaa; }
 .btab-label { font-size: 10px; color: #aaa; font-weight: 500; }
 .btab.active .btab-icon, .btab.active .btab-label { color: #1a1a1a; }
-
-/* Lists */
-.list-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid #f0f0f0; }
+.list-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid #f0f0f0; cursor: pointer; }
 .list-item:last-child { border-bottom: none; }
 .check { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-top: 1px; font-size: 12px; transition: all 0.15s; }
 .check.done { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
-.item-body { flex: 1; }
+.item-body { flex: 1; min-width: 0; }
 .item-text { font-size: 15px; line-height: 1.45; color: #1a1a1a; }
 .item-text.done { text-decoration: line-through; color: #bbb; }
 .item-meta { font-size: 11px; color: #bbb; margin-top: 3px; }
-.item-tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 6px; margin-right: 4px; }
-.tag-today { background: #E6F1FB; color: #185FA5; }
-.tag-idea { background: #EAF3DE; color: #3B6D11; }
+.item-note { font-size: 13px; color: #888; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .delete-btn { padding: 4px 6px; color: #ccc; cursor: pointer; font-size: 16px; flex-shrink: 0; }
 .delete-btn:active { color: #c0392b; }
 .empty { text-align: center; padding: 3rem 1rem; color: #bbb; font-size: 15px; line-height: 1.7; }
 .section-title { font-size: 13px; font-weight: 600; color: #888; margin-bottom: 8px; letter-spacing: 0.03em; }
 .completed-section { margin-top: 1.5rem; }
-
-/* Search */
 .search-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 12px; background: #f7f7f7; margin-bottom: 1rem; }
 .search-bar input { flex: 1; border: none; background: transparent; font-size: 15px; color: #1a1a1a; outline: none; }
 .search-bar span { color: #aaa; font-size: 16px; }
-
-/* Settings */
 .settings-section { margin-bottom: 1.5rem; }
 .settings-heading { font-size: 13px; font-weight: 600; color: #888; margin-bottom: 8px; letter-spacing: 0.03em; }
 .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 0; border-bottom: 0.5px solid #f0f0f0; }
@@ -79,6 +69,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-se
 .toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 200; white-space: nowrap; }
 .toast.show { opacity: 1; }
 .remind-banner { background: #FFF3CD; border: 1px solid #FFD700; border-radius: 12px; padding: 12px 16px; margin-bottom: 1rem; font-size: 14px; color: #856404; display: none; }
+
+/* 詳細ページ */
+.detail-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 300; display: none; flex-direction: column; max-width: 430px; margin: 0 auto; }
+.detail-page.open { display: flex; }
+.detail-header { display: flex; align-items: center; gap: 12px; padding: 1rem 1rem 0.75rem; border-bottom: 0.5px solid #f0f0f0; padding-top: env(safe-area-inset-top, 1rem); }
+.detail-back { font-size: 16px; color: #1a1a1a; cursor: pointer; padding: 4px 8px 4px 0; }
+.detail-title { flex: 1; font-size: 17px; font-weight: 600; }
+.detail-delete { font-size: 14px; color: #c0392b; cursor: pointer; padding: 4px; }
+.detail-body { flex: 1; display: flex; flex-direction: column; padding: 1rem; overflow-y: auto; gap: 1rem; }
+.detail-main-text { font-size: 18px; font-weight: 600; line-height: 1.5; color: #1a1a1a; border: none; outline: none; width: 100%; resize: none; font-family: inherit; background: transparent; }
+.detail-divider { height: 0.5px; background: #f0f0f0; }
+.detail-note-label { font-size: 12px; color: #aaa; font-weight: 500; letter-spacing: 0.04em; }
+.detail-note { font-size: 16px; line-height: 1.7; color: #1a1a1a; border: none; outline: none; width: 100%; resize: none; font-family: inherit; background: transparent; min-height: 200px; }
+.detail-meta { font-size: 12px; color: #ccc; padding: 0 1rem 1rem; }
 </style>
 </head>
 <body>
@@ -121,19 +125,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-se
       <div class="settings-heading">スワイプ設定</div>
       <div class="settings-row">
         <div><div class="settings-label">← 左スワイプ</div></div>
-        <select class="settings-select" id="left-action">
-          <option value="today">今日やる</option>
-          <option value="ideas">アイデア</option>
-          <option value="delete">削除</option>
-        </select>
+        <select class="settings-select" id="left-action"><option value="today">今日やる</option><option value="ideas">アイデア</option><option value="delete">削除</option></select>
       </div>
       <div class="settings-row">
         <div><div class="settings-label">→ 右スワイプ</div></div>
-        <select class="settings-select" id="right-action">
-          <option value="ideas">アイデア</option>
-          <option value="today">今日やる</option>
-          <option value="delete">削除</option>
-        </select>
+        <select class="settings-select" id="right-action"><option value="ideas">アイデア</option><option value="today">今日やる</option><option value="delete">削除</option></select>
       </div>
     </div>
     <div class="settings-section">
@@ -141,13 +137,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-se
       <div class="settings-row">
         <div><div class="settings-label">通知タイミング</div><div class="settings-sub">今日やるがN件になったら</div></div>
         <input type="number" class="settings-number" id="remind-count" value="3" min="1" max="20" />
-      </div>
-    </div>
-    <div class="settings-section">
-      <div class="settings-heading">LINE通知</div>
-      <div class="settings-row">
-        <div><div class="settings-label">Webhook URL</div><div class="settings-sub">LINE Notify連携（準備中）</div></div>
-        <span style="font-size:12px;color:#bbb">近日対応</span>
       </div>
     </div>
     <div class="settings-section">
@@ -160,46 +149,39 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-se
   </div>
 </div>
 
+<!-- 詳細ページ -->
+<div class="detail-page" id="detail-page">
+  <div class="detail-header">
+    <div class="detail-back" id="detail-back">← 戻る</div>
+    <div class="detail-title" id="detail-title"></div>
+    <div class="detail-delete" id="detail-delete">削除</div>
+  </div>
+  <div class="detail-body">
+    <textarea class="detail-main-text" id="detail-main" rows="2"></textarea>
+    <div class="detail-divider"></div>
+    <div class="detail-note-label">メモ</div>
+    <textarea class="detail-note" id="detail-note" placeholder="詳細・追記をここに..."></textarea>
+  </div>
+  <div class="detail-meta" id="detail-meta"></div>
+</div>
+
 <div class="bottom-tabs">
-  <div class="btab active" data-page="inbox">
-    <div class="btab-icon">📥</div>
-    <div class="btab-label">受信箱</div>
-  </div>
-  <div class="btab" data-page="today">
-    <div class="btab-icon">✅</div>
-    <div class="btab-label">今日やる</div>
-  </div>
-  <div class="btab" data-page="ideas">
-    <div class="btab-icon">💡</div>
-    <div class="btab-label">アイデア</div>
-  </div>
-  <div class="btab" data-page="settings">
-    <div class="btab-icon">⚙️</div>
-    <div class="btab-label">設定</div>
-  </div>
+  <div class="btab active" data-page="inbox"><div class="btab-icon">📥</div><div class="btab-label">受信箱</div></div>
+  <div class="btab" data-page="today"><div class="btab-icon">✅</div><div class="btab-label">今日やる</div></div>
+  <div class="btab" data-page="ideas"><div class="btab-icon">💡</div><div class="btab-label">アイデア</div></div>
+  <div class="btab" data-page="settings"><div class="btab-icon">⚙️</div><div class="btab-label">設定</div></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 const STORAGE_KEY = 'memo-app-data';
+let state = { memos: [], todayList: [], ideasList: [] };
+let detailType = null;
+let detailIndex = null;
 
-let state = {
-  memos: [],
-  todayList: [],
-  ideasList: []
-};
-
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function load() {
-  try {
-    const d = localStorage.getItem(STORAGE_KEY);
-    if (d) state = JSON.parse(d);
-  } catch(e) {}
-}
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function load() { try { const d = localStorage.getItem(STORAGE_KEY); if (d) state = JSON.parse(d); } catch(e) {} }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -212,7 +194,7 @@ function addMemo() {
   const input = document.getElementById('memo-input');
   const text = input.value.trim();
   if (!text) return;
-  state.memos.unshift({ id: Date.now(), text, time: new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'}) });
+  state.memos.unshift({ id: Date.now(), text, note: '', time: new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'}) });
   input.value = '';
   save();
   renderCards();
@@ -224,7 +206,6 @@ function renderCards() {
   const hint = document.getElementById('swipe-hint');
   const actions = document.getElementById('action-btns');
   stack.innerHTML = '';
-
   if (state.memos.length === 0) {
     stack.innerHTML = '<div class="empty">受信箱は空です 🎉<br>新しいメモを追加してください</div>';
     hint.style.display = 'none';
@@ -233,7 +214,6 @@ function renderCards() {
   }
   hint.style.display = 'block';
   actions.style.display = 'flex';
-
   const show = state.memos.slice(0, 3);
   [...show].reverse().forEach((memo, ri) => {
     const i = show.length - 1 - ri;
@@ -243,7 +223,6 @@ function renderCards() {
     if (i === 0) card.classList.add('front');
     else if (i === 1) card.classList.add('back1');
     else card.classList.add('back2');
-
     card.innerHTML = `
       <div class="swipe-badge left" id="hl-${memo.id}">今日やる ✓</div>
       <div class="swipe-badge right" id="hr-${memo.id}">アイデア 💡</div>
@@ -256,15 +235,15 @@ function renderCards() {
 }
 
 function attachDrag(card) {
-  let startX = 0, dx = 0, active = false;
-
+  let startX = 0, dx = 0, active = false, moved = false;
   const getLeft = () => document.getElementById('left-action').value;
   const getRight = () => document.getElementById('right-action').value;
 
-  function start(x) { startX = x; active = true; card.style.transition = 'none'; }
+  function start(x) { startX = x; active = true; moved = false; card.style.transition = 'none'; }
   function move(x) {
     if (!active) return;
     dx = x - startX;
+    if (Math.abs(dx) > 5) moved = true;
     card.style.transform = `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
     const id = card.dataset.id;
     const hl = document.getElementById(`hl-${id}`);
@@ -284,10 +263,15 @@ function attachDrag(card) {
       card.style.transform = 'translateX(110vw) rotate(25deg)';
       setTimeout(() => swipeAction(getRight()), 220);
     } else {
+      if (!moved) {
+        const id = parseInt(card.dataset.id);
+        const idx = state.memos.findIndex(m => m.id === id);
+        if (idx !== -1) openDetail('inbox', idx);
+      }
       card.style.transform = '';
       const id = card.dataset.id;
-      document.getElementById(`hl-${id}`).style.opacity = 0;
-      document.getElementById(`hr-${id}`).style.opacity = 0;
+      if (document.getElementById(`hl-${id}`)) document.getElementById(`hl-${id}`).style.opacity = 0;
+      if (document.getElementById(`hr-${id}`)) document.getElementById(`hr-${id}`).style.opacity = 0;
     }
     dx = 0;
   }
@@ -312,6 +296,44 @@ function swipeAction(action) {
   checkReminder();
 }
 
+// 詳細ページ
+function openDetail(type, index) {
+  detailType = type;
+  detailIndex = index;
+  const list = type === 'inbox' ? state.memos : type === 'today' ? state.todayList : state.ideasList;
+  const memo = list[index];
+  const labels = { inbox: '受信箱', today: '今日やる', ideas: 'アイデア' };
+  document.getElementById('detail-title').textContent = labels[type];
+  document.getElementById('detail-main').value = memo.text;
+  document.getElementById('detail-note').value = memo.note || '';
+  document.getElementById('detail-meta').textContent = memo.time;
+  document.getElementById('detail-page').classList.add('open');
+}
+
+function closeDetail() {
+  const list = detailType === 'inbox' ? state.memos : detailType === 'today' ? state.todayList : state.ideasList;
+  if (list[detailIndex]) {
+    list[detailIndex].text = document.getElementById('detail-main').value.trim() || list[detailIndex].text;
+    list[detailIndex].note = document.getElementById('detail-note').value;
+    save();
+  }
+  document.getElementById('detail-page').classList.remove('open');
+  renderCards();
+  renderLists();
+}
+
+function deleteFromDetail() {
+  if (!confirm('このメモを削除しますか？')) return;
+  const list = detailType === 'inbox' ? state.memos : detailType === 'today' ? state.todayList : state.ideasList;
+  list.splice(detailIndex, 1);
+  save();
+  document.getElementById('detail-page').classList.remove('open');
+  renderCards();
+  renderLists();
+  updateBadge();
+  showToast('削除しました');
+}
+
 function renderLists() {
   const sq = document.getElementById('search-today').value.toLowerCase();
   const iq = document.getElementById('search-ideas').value.toLowerCase();
@@ -322,16 +344,11 @@ function renderLists() {
 function renderList(elId, list, type, query) {
   const el = document.getElementById(elId);
   const filtered = query ? list.filter(m => m.text.toLowerCase().includes(query)) : list;
-  if (filtered.length === 0) {
-    el.innerHTML = `<div class="empty">${query ? '一致するメモがありません' : 'まだありません'}</div>`;
-    return;
-  }
+  if (filtered.length === 0) { el.innerHTML = `<div class="empty">${query ? '一致するメモがありません' : 'まだありません'}</div>`; return; }
   const pending = filtered.filter(m => !m.done);
   const done = filtered.filter(m => m.done);
   let html = '';
-  if (pending.length) {
-    html += pending.map(m => itemHTML(m, type, list.indexOf(m))).join('');
-  }
+  if (pending.length) html += pending.map(m => itemHTML(m, type, list.indexOf(m))).join('');
   if (done.length) {
     html += `<div class="completed-section"><div class="section-title">完了 (${done.length})</div>`;
     html += done.map(m => itemHTML(m, type, list.indexOf(m))).join('');
@@ -341,14 +358,16 @@ function renderList(elId, list, type, query) {
 }
 
 function itemHTML(m, type, i) {
+  const notePreview = m.note ? `<div class="item-note">${m.note}</div>` : '';
   return `
-    <div class="list-item">
-      <div class="check ${m.done ? 'done' : ''}" onclick="toggleDone('${type}',${i})">${m.done ? '✓' : ''}</div>
+    <div class="list-item" onclick="openDetail('${type}',${i})">
+      <div class="check ${m.done ? 'done' : ''}" onclick="event.stopPropagation();toggleDone('${type}',${i})">${m.done ? '✓' : ''}</div>
       <div class="item-body">
         <div class="item-text ${m.done ? 'done' : ''}">${m.text}</div>
+        ${notePreview}
         <div class="item-meta">${m.time}</div>
       </div>
-      <div class="delete-btn" onclick="deleteItem('${type}',${i})">✕</div>
+      <div class="delete-btn" onclick="event.stopPropagation();deleteItem('${type}',${i})">✕</div>
     </div>
   `;
 }
@@ -377,12 +396,8 @@ function checkReminder() {
   const threshold = parseInt(document.getElementById('remind-count').value) || 3;
   const pending = state.todayList.filter(m => !m.done).length;
   const banner = document.getElementById('remind-banner');
-  if (pending >= threshold) {
-    banner.style.display = 'block';
-    banner.textContent = `⚡ 今日やることが${pending}件あります！`;
-  } else {
-    banner.style.display = 'none';
-  }
+  if (pending >= threshold) { banner.style.display = 'block'; banner.textContent = `⚡ 今日やることが${pending}件あります！`; }
+  else { banner.style.display = 'none'; }
 }
 
 function switchPage(page) {
@@ -401,18 +416,15 @@ document.getElementById('memo-input').addEventListener('keydown', e => { if(e.ke
 document.getElementById('btn-today').addEventListener('click', () => swipeAction('today'));
 document.getElementById('btn-delete').addEventListener('click', () => swipeAction('delete'));
 document.getElementById('btn-idea').addEventListener('click', () => swipeAction('ideas'));
-document.querySelectorAll('.btab').forEach(el => {
-  el.addEventListener('click', () => switchPage(el.dataset.page));
-});
+document.querySelectorAll('.btab').forEach(el => { el.addEventListener('click', () => switchPage(el.dataset.page)); });
 document.getElementById('search-today').addEventListener('input', renderLists);
 document.getElementById('search-ideas').addEventListener('input', renderLists);
+document.getElementById('detail-back').addEventListener('click', closeDetail);
+document.getElementById('detail-delete').addEventListener('click', deleteFromDetail);
 document.getElementById('clear-btn').addEventListener('click', () => {
   if (confirm('全データを削除しますか？')) {
     state = { memos: [], todayList: [], ideasList: [] };
-    save();
-    renderCards();
-    updateBadge();
-    showToast('データを削除しました');
+    save(); renderCards(); updateBadge(); showToast('データを削除しました');
   }
 });
 
@@ -421,6 +433,6 @@ renderCards();
 updateBadge();
 checkReminder();
 </script>
-<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js")}</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/memo-app/sw.js")}</script>
 </body>
 </html>
