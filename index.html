@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="メモ">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>メモ</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; background: #fff; color: #1a1a1a; overscroll-behavior: none; }
+.app { max-width: 430px; margin: 0 auto; padding: env(safe-area-inset-top, 1rem) 1rem 5rem; min-height: 100dvh; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-top: 0.5rem; }
+.header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.badge-count { font-size: 13px; color: #888; }
+.input-area { display: flex; gap: 8px; margin-bottom: 1rem; }
+.input-area input { flex: 1; padding: 12px 14px; border: 1px solid #e0e0e0; border-radius: 12px; font-size: 16px; background: #f7f7f7; color: #1a1a1a; outline: none; }
+.input-area input:focus { border-color: #aaa; background: #fff; }
+.input-area button { width: 46px; height: 46px; border-radius: 12px; border: none; background: #1a1a1a; color: #fff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.hint { font-size: 12px; color: #aaa; text-align: center; margin-bottom: 0.75rem; }
+.card-stack { position: relative; height: 190px; margin-bottom: 1rem; }
+.memo-card { position: absolute; width: 100%; background: #fff; border: 1px solid #ebebeb; border-radius: 18px; padding: 1.25rem; touch-action: none; user-select: none; will-change: transform; }
+.memo-card.back1 { transform: translateY(7px) scale(0.97); z-index: 1; }
+.memo-card.back2 { transform: translateY(14px) scale(0.94); z-index: 0; }
+.memo-card.front { z-index: 2; }
+.memo-text { font-size: 16px; line-height: 1.55; margin-bottom: 0.6rem; color: #1a1a1a; }
+.memo-time { font-size: 12px; color: #aaa; }
+.swipe-badge { position: absolute; top: 14px; padding: 4px 10px; border-radius: 8px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.05s; }
+.swipe-badge.left { left: 14px; background: #E6F1FB; color: #185FA5; }
+.swipe-badge.right { right: 14px; background: #EAF3DE; color: #3B6D11; }
+.actions { display: flex; gap: 12px; justify-content: center; margin-bottom: 1.5rem; }
+.action-btn { width: 56px; height: 56px; border-radius: 50%; border: 1px solid #e0e0e0; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 22px; color: #555; transition: background 0.1s; }
+.action-btn:active { background: #f0f0f0; }
+.action-btn.danger { color: #c0392b; }
+
+/* Bottom tabs */
+.bottom-tabs { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 0.5px solid #e0e0e0; display: flex; padding-bottom: env(safe-area-inset-bottom, 0); z-index: 100; }
+.btab { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 8px; cursor: pointer; gap: 3px; }
+.btab-icon { font-size: 22px; color: #aaa; }
+.btab-label { font-size: 10px; color: #aaa; font-weight: 500; }
+.btab.active .btab-icon, .btab.active .btab-label { color: #1a1a1a; }
+
+/* Lists */
+.list-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid #f0f0f0; }
+.list-item:last-child { border-bottom: none; }
+.check { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-top: 1px; font-size: 12px; transition: all 0.15s; }
+.check.done { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
+.item-body { flex: 1; }
+.item-text { font-size: 15px; line-height: 1.45; color: #1a1a1a; }
+.item-text.done { text-decoration: line-through; color: #bbb; }
+.item-meta { font-size: 11px; color: #bbb; margin-top: 3px; }
+.item-tag { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 6px; margin-right: 4px; }
+.tag-today { background: #E6F1FB; color: #185FA5; }
+.tag-idea { background: #EAF3DE; color: #3B6D11; }
+.delete-btn { padding: 4px 6px; color: #ccc; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+.delete-btn:active { color: #c0392b; }
+.empty { text-align: center; padding: 3rem 1rem; color: #bbb; font-size: 15px; line-height: 1.7; }
+.section-title { font-size: 13px; font-weight: 600; color: #888; margin-bottom: 8px; letter-spacing: 0.03em; }
+.completed-section { margin-top: 1.5rem; }
+
+/* Search */
+.search-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid #e0e0e0; border-radius: 12px; background: #f7f7f7; margin-bottom: 1rem; }
+.search-bar input { flex: 1; border: none; background: transparent; font-size: 15px; color: #1a1a1a; outline: none; }
+.search-bar span { color: #aaa; font-size: 16px; }
+
+/* Settings */
+.settings-section { margin-bottom: 1.5rem; }
+.settings-heading { font-size: 13px; font-weight: 600; color: #888; margin-bottom: 8px; letter-spacing: 0.03em; }
+.settings-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 0; border-bottom: 0.5px solid #f0f0f0; }
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-size: 15px; color: #1a1a1a; }
+.settings-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+.settings-select { font-size: 14px; padding: 7px 10px; border: 1px solid #e0e0e0; border-radius: 10px; background: #f7f7f7; color: #1a1a1a; }
+.settings-number { font-size: 14px; padding: 7px 10px; border: 1px solid #e0e0e0; border-radius: 10px; background: #f7f7f7; color: #1a1a1a; width: 70px; text-align: center; }
+.toast { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 200; white-space: nowrap; }
+.toast.show { opacity: 1; }
+.remind-banner { background: #FFF3CD; border: 1px solid #FFD700; border-radius: 12px; padding: 12px 16px; margin-bottom: 1rem; font-size: 14px; color: #856404; display: none; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div id="page-inbox">
+    <div class="header">
+      <h1>メモ</h1>
+      <span class="badge-count" id="badge-count"></span>
+    </div>
+    <div class="remind-banner" id="remind-banner"></div>
+    <div class="input-area">
+      <input id="memo-input" type="text" placeholder="メモを入力..." />
+      <button id="add-btn">+</button>
+    </div>
+    <div class="hint" id="swipe-hint">← 今日やる　　アイデア →</div>
+    <div class="card-stack" id="card-stack"></div>
+    <div class="actions" id="action-btns">
+      <div class="action-btn" id="btn-today" title="今日やる">📅</div>
+      <div class="action-btn danger" id="btn-delete" title="削除">🗑</div>
+      <div class="action-btn" id="btn-idea" title="アイデア">💡</div>
+    </div>
+  </div>
+
+  <div id="page-today" style="display:none">
+    <div class="header"><h1>今日やる</h1></div>
+    <div class="search-bar"><span>🔍</span><input id="search-today" placeholder="検索..." /></div>
+    <div id="today-list"></div>
+  </div>
+
+  <div id="page-ideas" style="display:none">
+    <div class="header"><h1>アイデア</h1></div>
+    <div class="search-bar"><span>🔍</span><input id="search-ideas" placeholder="検索..." /></div>
+    <div id="ideas-list"></div>
+  </div>
+
+  <div id="page-settings" style="display:none">
+    <div class="header"><h1>設定</h1></div>
+    <div class="settings-section">
+      <div class="settings-heading">スワイプ設定</div>
+      <div class="settings-row">
+        <div><div class="settings-label">← 左スワイプ</div></div>
+        <select class="settings-select" id="left-action">
+          <option value="today">今日やる</option>
+          <option value="ideas">アイデア</option>
+          <option value="delete">削除</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">→ 右スワイプ</div></div>
+        <select class="settings-select" id="right-action">
+          <option value="ideas">アイデア</option>
+          <option value="today">今日やる</option>
+          <option value="delete">削除</option>
+        </select>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-heading">リマインド</div>
+      <div class="settings-row">
+        <div><div class="settings-label">通知タイミング</div><div class="settings-sub">今日やるがN件になったら</div></div>
+        <input type="number" class="settings-number" id="remind-count" value="3" min="1" max="20" />
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-heading">LINE通知</div>
+      <div class="settings-row">
+        <div><div class="settings-label">Webhook URL</div><div class="settings-sub">LINE Notify連携（準備中）</div></div>
+        <span style="font-size:12px;color:#bbb">近日対応</span>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-heading">データ</div>
+      <div class="settings-row" style="cursor:pointer" id="clear-btn">
+        <div><div class="settings-label" style="color:#c0392b">全データを削除</div></div>
+        <span style="color:#ccc">›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-tabs">
+  <div class="btab active" data-page="inbox">
+    <div class="btab-icon">📥</div>
+    <div class="btab-label">受信箱</div>
+  </div>
+  <div class="btab" data-page="today">
+    <div class="btab-icon">✅</div>
+    <div class="btab-label">今日やる</div>
+  </div>
+  <div class="btab" data-page="ideas">
+    <div class="btab-icon">💡</div>
+    <div class="btab-label">アイデア</div>
+  </div>
+  <div class="btab" data-page="settings">
+    <div class="btab-icon">⚙️</div>
+    <div class="btab-label">設定</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'memo-app-data';
+
+let state = {
+  memos: [],
+  todayList: [],
+  ideasList: []
+};
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function load() {
+  try {
+    const d = localStorage.getItem(STORAGE_KEY);
+    if (d) state = JSON.parse(d);
+  } catch(e) {}
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function addMemo() {
+  const input = document.getElementById('memo-input');
+  const text = input.value.trim();
+  if (!text) return;
+  state.memos.unshift({ id: Date.now(), text, time: new Date().toLocaleTimeString('ja-JP', {hour:'2-digit',minute:'2-digit'}) });
+  input.value = '';
+  save();
+  renderCards();
+  updateBadge();
+}
+
+function renderCards() {
+  const stack = document.getElementById('card-stack');
+  const hint = document.getElementById('swipe-hint');
+  const actions = document.getElementById('action-btns');
+  stack.innerHTML = '';
+
+  if (state.memos.length === 0) {
+    stack.innerHTML = '<div class="empty">受信箱は空です 🎉<br>新しいメモを追加してください</div>';
+    hint.style.display = 'none';
+    actions.style.display = 'none';
+    return;
+  }
+  hint.style.display = 'block';
+  actions.style.display = 'flex';
+
+  const show = state.memos.slice(0, 3);
+  [...show].reverse().forEach((memo, ri) => {
+    const i = show.length - 1 - ri;
+    const card = document.createElement('div');
+    card.className = 'memo-card';
+    card.dataset.id = memo.id;
+    if (i === 0) card.classList.add('front');
+    else if (i === 1) card.classList.add('back1');
+    else card.classList.add('back2');
+
+    card.innerHTML = `
+      <div class="swipe-badge left" id="hl-${memo.id}">今日やる ✓</div>
+      <div class="swipe-badge right" id="hr-${memo.id}">アイデア 💡</div>
+      <div class="memo-text">${memo.text}</div>
+      <div class="memo-time">${memo.time}</div>
+    `;
+    if (i === 0) attachDrag(card);
+    stack.appendChild(card);
+  });
+}
+
+function attachDrag(card) {
+  let startX = 0, dx = 0, active = false;
+
+  const getLeft = () => document.getElementById('left-action').value;
+  const getRight = () => document.getElementById('right-action').value;
+
+  function start(x) { startX = x; active = true; card.style.transition = 'none'; }
+  function move(x) {
+    if (!active) return;
+    dx = x - startX;
+    card.style.transform = `translateX(${dx}px) rotate(${dx * 0.06}deg)`;
+    const id = card.dataset.id;
+    const hl = document.getElementById(`hl-${id}`);
+    const hr = document.getElementById(`hr-${id}`);
+    if (dx < -40) { hl.style.opacity = Math.min(1, Math.abs(dx)/80); hr.style.opacity = 0; }
+    else if (dx > 40) { hr.style.opacity = Math.min(1, dx/80); hl.style.opacity = 0; }
+    else { hl.style.opacity = 0; hr.style.opacity = 0; }
+  }
+  function end() {
+    if (!active) return;
+    active = false;
+    card.style.transition = 'transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94)';
+    if (dx < -80) {
+      card.style.transform = 'translateX(-110vw) rotate(-25deg)';
+      setTimeout(() => swipeAction(getLeft()), 220);
+    } else if (dx > 80) {
+      card.style.transform = 'translateX(110vw) rotate(25deg)';
+      setTimeout(() => swipeAction(getRight()), 220);
+    } else {
+      card.style.transform = '';
+      const id = card.dataset.id;
+      document.getElementById(`hl-${id}`).style.opacity = 0;
+      document.getElementById(`hr-${id}`).style.opacity = 0;
+    }
+    dx = 0;
+  }
+
+  card.addEventListener('mousedown', e => { e.preventDefault(); start(e.clientX); });
+  document.addEventListener('mousemove', e => move(e.clientX));
+  document.addEventListener('mouseup', end);
+  card.addEventListener('touchstart', e => start(e.touches[0].clientX), { passive: true });
+  card.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0].clientX); }, { passive: false });
+  card.addEventListener('touchend', end);
+}
+
+function swipeAction(action) {
+  if (state.memos.length === 0) return;
+  const memo = state.memos.shift();
+  if (action === 'today') { state.todayList.unshift({...memo, done: false}); showToast('今日やるに追加 ✓'); }
+  else if (action === 'ideas') { state.ideasList.unshift({...memo, done: false}); showToast('アイデアに追加 💡'); }
+  else { showToast('削除しました'); }
+  save();
+  renderCards();
+  updateBadge();
+  checkReminder();
+}
+
+function renderLists() {
+  const sq = document.getElementById('search-today').value.toLowerCase();
+  const iq = document.getElementById('search-ideas').value.toLowerCase();
+  renderList('today-list', state.todayList, 'today', sq);
+  renderList('ideas-list', state.ideasList, 'ideas', iq);
+}
+
+function renderList(elId, list, type, query) {
+  const el = document.getElementById(elId);
+  const filtered = query ? list.filter(m => m.text.toLowerCase().includes(query)) : list;
+  if (filtered.length === 0) {
+    el.innerHTML = `<div class="empty">${query ? '一致するメモがありません' : 'まだありません'}</div>`;
+    return;
+  }
+  const pending = filtered.filter(m => !m.done);
+  const done = filtered.filter(m => m.done);
+  let html = '';
+  if (pending.length) {
+    html += pending.map(m => itemHTML(m, type, list.indexOf(m))).join('');
+  }
+  if (done.length) {
+    html += `<div class="completed-section"><div class="section-title">完了 (${done.length})</div>`;
+    html += done.map(m => itemHTML(m, type, list.indexOf(m))).join('');
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
+function itemHTML(m, type, i) {
+  return `
+    <div class="list-item">
+      <div class="check ${m.done ? 'done' : ''}" onclick="toggleDone('${type}',${i})">${m.done ? '✓' : ''}</div>
+      <div class="item-body">
+        <div class="item-text ${m.done ? 'done' : ''}">${m.text}</div>
+        <div class="item-meta">${m.time}</div>
+      </div>
+      <div class="delete-btn" onclick="deleteItem('${type}',${i})">✕</div>
+    </div>
+  `;
+}
+
+function toggleDone(type, i) {
+  const list = type === 'today' ? state.todayList : state.ideasList;
+  list[i].done = !list[i].done;
+  save();
+  renderLists();
+}
+
+function deleteItem(type, i) {
+  if (type === 'today') state.todayList.splice(i, 1);
+  else state.ideasList.splice(i, 1);
+  save();
+  renderLists();
+  updateBadge();
+}
+
+function updateBadge() {
+  const el = document.getElementById('badge-count');
+  el.textContent = state.memos.length > 0 ? `${state.memos.length}件` : '';
+}
+
+function checkReminder() {
+  const threshold = parseInt(document.getElementById('remind-count').value) || 3;
+  const pending = state.todayList.filter(m => !m.done).length;
+  const banner = document.getElementById('remind-banner');
+  if (pending >= threshold) {
+    banner.style.display = 'block';
+    banner.textContent = `⚡ 今日やることが${pending}件あります！`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function switchPage(page) {
+  ['inbox','today','ideas','settings'].forEach(p => {
+    document.getElementById(`page-${p}`).style.display = p === page ? 'block' : 'none';
+  });
+  document.querySelectorAll('.btab').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+  if (page === 'today' || page === 'ideas') renderLists();
+  if (page === 'inbox') checkReminder();
+}
+
+document.getElementById('add-btn').addEventListener('click', addMemo);
+document.getElementById('memo-input').addEventListener('keydown', e => { if(e.key === 'Enter') addMemo(); });
+document.getElementById('btn-today').addEventListener('click', () => swipeAction('today'));
+document.getElementById('btn-delete').addEventListener('click', () => swipeAction('delete'));
+document.getElementById('btn-idea').addEventListener('click', () => swipeAction('ideas'));
+document.querySelectorAll('.btab').forEach(el => {
+  el.addEventListener('click', () => switchPage(el.dataset.page));
+});
+document.getElementById('search-today').addEventListener('input', renderLists);
+document.getElementById('search-ideas').addEventListener('input', renderLists);
+document.getElementById('clear-btn').addEventListener('click', () => {
+  if (confirm('全データを削除しますか？')) {
+    state = { memos: [], todayList: [], ideasList: [] };
+    save();
+    renderCards();
+    updateBadge();
+    showToast('データを削除しました');
+  }
+});
+
+load();
+renderCards();
+updateBadge();
+checkReminder();
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js")}</script>
+</body>
+</html>
