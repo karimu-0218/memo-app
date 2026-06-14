@@ -412,7 +412,7 @@ function switchPage(page) {
 }
 
 document.getElementById('add-btn').addEventListener('click', addMemo);
-document.getElementById('memo-input').addEventListener('keydown', e => { if(e.key === 'Enter') addMemo(); });
+
 document.getElementById('btn-today').addEventListener('click', () => swipeAction('today'));
 document.getElementById('btn-delete').addEventListener('click', () => swipeAction('delete'));
 document.getElementById('btn-idea').addEventListener('click', () => swipeAction('ideas'));
